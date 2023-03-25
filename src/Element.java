@@ -1,52 +1,90 @@
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Element {
-    private String tag;
-    private String content;
-    private Map<String, String> attributes;
+    private final String tag;
+    private String text;
+    private final Map<String, String> attributes;
+    private final Map<String, String> style;
+    private final List<Element> children;
 
-    private Element(String tag) {
+    public Element(String tag, String text) {
         this.tag = tag;
+        this.text = text;
         this.attributes = new HashMap<>();
+        this.style = new HashMap<>();
+        this.children = new ArrayList<>();
     }
 
-    public static Element create(String tag) {
-        return new Element(tag);
+    public void addElement(Element child) {
+        children.add(child);
     }
 
-    public Element with(String content) {
-        this.content = content;
-        return this;
+    public String getTag() {
+        return tag;
     }
 
-    public Element attribute(String key, String value) {
-        this.attributes.put(key, value);
-        return this;
+    public void setStyle(String property, String value) {
+        style.put(property, value);
     }
 
+    public Map<String, String> getStyle() {
+        return style;
+    }
+
+    public void addAttribute(String name, String value) {
+        attributes.put(name, value);
+    }
+
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("<").append(tag);
-        for (Map.Entry<String, String> entry : attributes.entrySet()) {
-            sb.append(" ").append(entry.getKey()).append("=\"").append(entry.getValue()).append("\"");
+        for (Map.Entry<String, String> attribute : attributes.entrySet()) {
+            sb.append(" ").append(attribute.getKey()).append("=\"").append(attribute.getValue()).append("\"");
         }
-        if (content != null) {
-            sb.append(">").append(content).append("</").append(tag).append(">");
-        } else {
-            sb.append("/>");
+
+        // Generate the "style" attribute if the style map is not empty
+        if (!style.isEmpty()) {
+            sb.append(" style=\"");
+            for (Map.Entry<String, String> property : style.entrySet()) {
+                sb.append(property.getKey()).append(": ").append(property.getValue()).append("; ");
+            }
+            sb.append("\"");
         }
-        sb.append("\n"); // legger til linjeskift
+
+        sb.append(">");
+        for (Element child : children) {
+            sb.append("\n" + "  ").append(child.toString());
+        }
+        sb.append(text).append(" "+ "\n"+"</").append(tag).append(">");
         return sb.toString();
     }
 
-    public Element addElement(Element element) {
-        this.content += element.toString();
+    public Map<String, String> getAttributes() {
+        return attributes;
+    }
+
+    public String getAttribute(String name) {
+        return attributes.get(name);
+    }
+
+    public Element attribute(String name, String value) {
+        attributes.put(name, value);
         return this;
     }
 
 
+    public Element style(String property, String value) {
+        style.put(property, value);
+        return this;
+    }
+
+    public static Element create(String tag) {
+        return new Element(tag, "");
+    }
+    public Element with(String text) {
+        this.text = text;
+        return this;
+    }
 
 }
-
-

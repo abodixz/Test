@@ -1,46 +1,49 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Body {
-    private List<Element> elements;
-    private int indentLevel; // holder styr på innrykket
+class Body {
+    private final List<Element> elements;
 
     private Body() {
         this.elements = new ArrayList<>();
-        this.indentLevel = 0;
     }
 
-    public static Body create() {
+    static public Body CreateBody() {
         return new Body();
     }
 
-    public Body addElement(Element element) {
-        this.elements.add(element);
-        return this;
+    public void addElement(Element element) {
+        elements.add(element);
     }
 
+    public String getStyleSheetLink() {
+        return "<link rel=\"stylesheet\" href=\"style.css\">";
+    }
+
+
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("<body>\n"); // legger til linjeskift og starter kroppen
-        indentLevel++;
+        sb.append("<!DOCTYPE html>" + "\n");
+        sb.append("<html lang=\"en\">" + "\n");
+        sb.append("<head>" + "\n");
+        sb.append("\t").append("<meta charset='UTF-8'>" + "\n");
+        sb.append("\t").append("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">" + "\n");
+        sb.append("\t").append("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" +"\n");
+        sb.append("\t").append("<title>App</title>" + "\n");
+        sb.append("\t").append(getStyleSheetLink() + "\n");
 
+        sb.append("</head>" + "\n");
+        sb.append("<body>" + "\n");
         for (Element element : elements) {
-            sb.append(getIndentation());
-            sb.append(element.toString());
+            sb.append("\t").append(element).append("\n");
         }
-
-        indentLevel--;
-        sb.append(getIndentation());
-        sb.append("</body>"); // avslutter kroppen
-        sb.append("\n"); // legger til linjeskift
+        sb.append("</body>" + "\n");
+        sb.append("</html>");
         return sb.toString();
     }
 
-    private String getIndentation() {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < indentLevel; i++) {
-            sb.append("    "); // bruker 4 mellomrom per innrykk
-        }
-        return sb.toString();
+    public List<Element> getElements() {
+        return elements;
     }
 }
